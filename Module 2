@@ -1,0 +1,22 @@
+Orginal code 
+assignment2 <- c(16, 18, 14, 22, 27, 17, 19, 17, 17, 22, 20, 22)
+
+myMean <- function(assignment2) {
+  return(sum(assignment) / length(someData))
+}
+
+myMean(assignment2)
+
+Output
+Error in myMean(assignment2) : object 'assignment' not found
+
+Corrected Function
+myMean <- function(assignment2) {
+  return(sum(assignment2) / length(assignment2))
+}
+
+myMean(assignment2)
+
+Out put 
+[1] 19.25
+When I ran the test on the original myMean() function, I got an error message stating "object assignment2" could not be found. This happened as this function calls for the variable names assignment and someData however, the vector being passed to this function is called assignment2. Once I changed each name in this function from assignment2, the function then provided me with the correct mean (19.25).
