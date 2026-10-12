@@ -1,0 +1,107 @@
+# Assignment #7: Exploring R's Object-Oriented Systems
+# Robert Dees
+
+data("mtcars")
+
+head(mtcars)
+str(mtcars)
+class(mtcars)
+typeof(mtcars)
+
+
+# summary() dispatches based on the object's class
+summary(mtcars)
+
+# print() displays the data frame
+print(head(mtcars))
+
+# plot() creates a scatterplot using two variables
+plot(
+  mtcars$wt,
+  mtcars$mpg,
+  main = "Vehicle Weight vs. Miles Per Gallon",
+  xlab = "Vehicle Weight",
+  ylab = "Miles Per Gallon",
+  col = "blue",
+  pch = 19
+)
+
+# methods() shows methods available for a generic function
+methods("print")
+methods("summary")
+methods("plot")
+
+# mtcars is a data frame, so generic functions can use methods
+# created for the data.frame class. If no class-specific method
+# exists, R normally uses the default method.
+
+s3_obj <- list(
+  name = "Robert",
+  age = 23,
+  GPA = 3.5
+)
+
+class(s3_obj) <- "student_s3"
+
+class(s3_obj)
+typeof(s3_obj)
+isS4(s3_obj)
+
+# Create an S3 print method
+print.student_s3 <- function(x, ...) {
+  cat("S3 Student\n")
+  cat("Name:", x$name, "\n")
+  cat("Age:", x$age, "\n")
+  cat("GPA:", x$GPA, "\n")
+}
+
+# Calls print.student_s3()
+print(s3_obj)
+
+setClass(
+  "student_s4",
+  slots = c(
+    name = "character",
+    age = "numeric",
+    GPA = "numeric"
+  )
+)
+
+s4_obj <- new(
+  "student_s4",
+  name = "Robert",
+  age = 23,
+  GPA = 3.5
+)
+
+class(s4_obj)
+typeof(s4_obj)
+isS4(s4_obj)
+
+# Create an S4 show method
+setMethod(
+  "show",
+  "student_s4",
+  function(object) {
+    cat("S4 Student\n")
+    cat("Name:", object@name, "\n")
+    cat("Age:", object@age, "\n")
+    cat("GPA:", object@GPA, "\n")
+  }
+)
+
+# Calls the S4 show method
+show(s4_obj)
+
+class(s3_obj)
+class(s4_obj)
+
+typeof(s3_obj)
+typeof(s4_obj)
+
+isS4(s3_obj)
+isS4(s4_obj)
+
+# Examine the formal structure of the S4 class
+getClass("student_s4")
+slotNames(s4_obj)
