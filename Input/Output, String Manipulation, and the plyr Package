@@ -1,0 +1,95 @@
+# Assignment #8
+# Robert Dees
+
+# Install plyr one time if needed:
+# install.packages("plyr")
+
+library(plyr)
+
+
+###################################################
+# Step 1: Import and inspect the dataset
+###################################################
+
+# Select "Assignment 6 Dataset.txt"
+# The file uses commas, so read.csv() is required
+student6 <- read.csv(
+  file.choose(),
+  header = TRUE,
+  stringsAsFactors = FALSE
+)
+
+# Examine the dataset
+head(student6)
+str(student6)
+summary(student6)
+names(student6)
+
+# Calculate the average grade by sex
+gender_mean <- ddply(
+  student6,
+  "Sex",
+  summarise,
+  GradeAverage = mean(Grade, na.rm = TRUE)
+)
+
+# Display the results
+gender_mean
+
+# Save the averages as a text file
+write.table(
+  gender_mean,
+  file = "gender_mean.txt",
+  sep = "\t",
+  row.names = FALSE
+)
+
+
+###################################################
+# Step 2: Find names containing "i"
+###################################################
+
+# Select names containing an uppercase or lowercase "i"
+i_students <- subset(
+  student6,
+  grepl("i", Name, ignore.case = TRUE)
+)
+
+# Display the filtered data
+i_students
+
+# Display only the names
+i_students$Name
+
+# Save the names as a CSV file
+write.csv(
+  i_students$Name,
+  file = "i_students.csv",
+  row.names = FALSE,
+  quote = FALSE
+)
+
+
+###################################################
+# Step 3: Export the full filtered dataset
+###################################################
+
+# Save all information for the filtered students
+write.csv(
+  i_students,
+  file = "i_students_full.csv",
+  row.names = FALSE
+)
+
+# Confirm that the files were created
+file.exists("gender_mean.txt")
+file.exists("i_students.csv")
+file.exists("i_students_full.csv")
+
+# Show where the files were saved
+getwd()
+
+# Display the created files
+list.files(
+  pattern = "gender_mean|i_students"
+)
