@@ -1,0 +1,92 @@
+# Assignment 9
+# Robert Dees
+
+# Run these in the Console once if needed:
+# install.packages("lattice")
+# install.packages("ggplot2")
+
+library(lattice)
+library(ggplot2)
+
+# Load the dataset
+data("iris", package = "datasets")
+head(iris)
+
+# Create a folder for the saved plots
+dir.create("assignment9_plots", showWarnings = FALSE)
+
+# BASE R GRAPHICS
+
+# Scatter plot
+png("assignment9_plots/base_scatter.png",
+    width = 1000, height = 700)
+
+plot(iris$Sepal.Length, iris$Petal.Length,
+     main = "Base R: Sepal Length vs. Petal Length",
+     xlab = "Sepal Length (cm)",
+     ylab = "Petal Length (cm)",
+     col = "steelblue",
+     pch = 19)
+
+dev.off()
+
+# Histogram
+png("assignment9_plots/base_histogram.png",
+    width = 1000, height = 700)
+
+hist(iris$Petal.Length,
+     main = "Base R: Distribution of Petal Length",
+     xlab = "Petal Length (cm)",
+     col = "lightblue",
+     border = "white",
+     breaks = 10)
+
+dev.off()
+
+# LATTICE GRAPHICS
+
+# Separate scatter plots for each species
+lattice_plot <- xyplot(
+  Petal.Length ~ Sepal.Length | Species,
+  data = iris,
+  main = "Lattice: Sepal Length vs. Petal Length by Species",
+  xlab = "Sepal Length (cm)",
+  ylab = "Petal Length (cm)",
+  layout = c(3, 1),
+  pch = 19,
+  col = "steelblue"
+)
+
+png("assignment9_plots/lattice_scatter.png",
+    width = 1200, height = 700)
+
+print(lattice_plot)
+
+dev.off()
+
+# GGPLOT2
+
+# Scatter plot with a trend line for each species
+ggplot_plot <- ggplot(
+  iris,
+  aes(x = Sepal.Length,
+      y = Petal.Length,
+      color = Species)
+) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "ggplot2: Sepal Length vs. Petal Length",
+    x = "Sepal Length (cm)",
+    y = "Petal Length (cm)",
+    color = "Species"
+  ) +
+  theme_minimal(base_size = 14)
+
+ggsave(
+  "assignment9_plots/ggplot_scatter.png",
+  plot = ggplot_plot,
+  width = 9,
+  height = 6,
+  dpi = 300
+)
