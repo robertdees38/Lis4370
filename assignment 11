@@ -1,0 +1,108 @@
+# Assignment 11: Debugging and Defensive Programming
+# Robert Dees
+
+# Flag values outside the Tukey limits
+tukey.outlier <- function(x) {
+  q <- quantile(x, c(0.25, 0.75), names = FALSE)
+  spread <- q[2] - q[1]
+
+  x < q[1] - 1.5 * spread |
+    x > q[2] + 1.5 * spread
+}
+
+# Original function with the bug
+tukey_multiple <- function(x) {
+  outliers <- array(TRUE, dim = dim(x))
+
+  for (j in 1:ncol(x)) {
+    outliers[, j] <-
+      outliers[, j] && tukey.outlier(x[, j])
+  }
+
+  outlier.vec <- vector("logical", length = nrow(x))
+
+  for (i in 1:nrow(x)) {
+    outlier.vec[i] <- all(outliers[i, ])
+  }
+
+  return(outlier.vec)
+}
+
+# Create the test matrix
+set.seed(123)
+test_mat <- matrix(rnorm(50), nrow = 10)
+
+# Show the original error without stopping the script
+try(tukey_multiple(test_mat))
+
+# Corrected function with defensive checks
+corrected_tukey <- function(x) {
+
+  if (!is.matrix(x) || !is.numeric(x)) {
+    stop("x must be a numeric matrix.")
+  }
+
+  if (nrow(x) == 0L || ncol(x) == 0L) {
+    stop("x must have at least one row and one column.")
+  }
+
+  if (any(!is.finite(x))) {
+    stop("x must not contain missing or infinite values.")
+  }
+
+  outliers <- array(TRUE, dim = dim(x))
+
+  for (j in seq_len(ncol(x))) {
+    outliers[, j] <-
+      outliers[, j] & tukey.outlier(x[, j])
+  }
+
+  outlier.vec <- logical(nrow(x))
+
+  for (i in seq_len(nrow(x))) {
+    outlier.vec[i] <- all(outliers[i, ])
+  }
+
+  return(outlier.vec)
+}
+
+# Run the corrected function
+result <- corrected_tukey(test_mat)
+print(result)
+
+# Check the type and length
+print(is.logical(result))
+print(length(result))
+
+stopifnot(
+  is.logical(result),
+  length(result) == 10,
+  !anyNA(result)
+)
+
+# Test a row that is an outlier in both columns
+known_mat <- cbind(
+  c(rep(0, 9), 100),
+  c(rep(0, 9), 100)
+)
+
+known_result <- corrected_tukey(known_mat)
+print(known_result)
+
+stopifnot(
+  identical(known_result, c(rep(FALSE, 9), TRUE))
+)
+
+# Test a row that is an outlier in only one column
+one_column_mat <- cbind(
+  c(rep(0, 9), 100),
+  rep(0, 10)
+)
+
+stopifnot(!any(corrected_tukey(one_column_mat)))
+
+# Test the defensive checks
+try(corrected_tukey(1:10))
+try(corrected_tukey(matrix("hello", nrow = 2, ncol = 2)))
+try(corrected_tukey(matrix(c(1, NA), nrow = 2)))
+try(corrected_tukey(matrix(numeric(0), nrow = 0, ncol = 2)))
