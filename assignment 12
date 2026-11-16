@@ -1,0 +1,42 @@
+## Introduction
+
+R Markdown puts writing, code, and results in one report. I used mtcars to look at gas mileage.
+
+## Math
+
+Here is math in a sentence: $\alpha + \beta = \gamma$.
+
+Here is the formula for an average:
+
+$$
+\bar{x} = \frac{\sum x_i}{n}
+$$
+
+## Load Data
+
+```{r}
+data(mtcars)
+head(mtcars)
+```
+
+## Gas Mileage
+
+This code shows a summary of gas mileage.
+
+```{r}
+summary(mtcars$mpg)
+```
+
+## Plot
+
+```{r}
+plot(mtcars$wt, mtcars$mpg)
+```
+
+Heavier cars generally get lower gas mileage.
+
+## Reflection
+
+I like having the writing and code together. It saves me from copying results into a separate report.
+
+[After knitting, add one thing you noticed when comparing this file with the HTML report.]
